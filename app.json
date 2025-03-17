@@ -1,39 +1,22 @@
 {
   "expo": {
-    "name": "App-Rodizio-Organistas",
-    "slug": "App-Rodizio-Organistas",
-    "platforms": [
-      "android",
-      "ios"
-    ],
-    "version": "1.0.0",
-    "orientation": "portrait",
-    "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
+    "name":"Rodizio ccb",
+    "slug":"app-rodizio-organistas",
+    "icon":"./assets/capa_app.png",
     "newArchEnabled": true,
-    "splash": {
-      "image": "./assets/splash-icon.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+    "splash":{
+    "resizeMode":"contain",
+    "backgroundColor":"#FFFFFF"
+
     },
-    "ios": {
-      "supportsTablet": true,
-      "bundleIdentifier": "com.trompete.AppRodizioOrganistas"
-    },
-    "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
-      },
-      "package": "com.trompete.AppRodizioOrganistas"
-    },
-    "web": {
-      "favicon": "./assets/favicon.png"
-    },
+
     "extra": {
       "eas": {
-        "projectId": "3bb0f1a6-b69d-4951-934f-3d191a290041"
+        "projectId": "0edd6993-eb55-47f8-872f-002ecf065e31"
       }
+    },
+    "android": {
+      "package": "com.trompete.approdizioorganistas"
     }
   }
 }
