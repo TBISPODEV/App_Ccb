@@ -1,8 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import GeradorRodizio from './GeradorRodizio';
-
-const GeradorOrganistas = () => {
+import GeradorRodizio from './GeradorRodizio_4';
+const CultoJovens = () => {
   return (
     <View style={styles.container}>
       <GeradorRodizio />
@@ -19,5 +18,4 @@ const styles = StyleSheet.create({
  
 });
 
-export default GeradorOrganistas;
-
+export default CultoJovens;

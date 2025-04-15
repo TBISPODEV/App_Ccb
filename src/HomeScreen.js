@@ -1,40 +1,52 @@
-import React from 'react';
-import { View, Text, StyleSheet, ImageBackground, TouchableOpacity } from 'react-native';
-import Icon from 'react-native-vector-icons/FontAwesome'; // Importa os ícones
-import { useNavigation } from '@react-navigation/native';
+import React from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  ImageBackground,
+  TouchableOpacity,
+} from "react-native";
+import Icon from "react-native-vector-icons/FontAwesome"; // Importa os ícones
 
 const HomeScreen = ({ navigation }) => {
   return (
     <ImageBackground
-      source={require('../assets/capa.jpg')} // Caminho da imagem de fundo
+      source={require("../assets/capa.jpg")}
       style={styles.container}
-      resizeMode="cover" // A imagem cobre toda a tela
+      resizeMode="cover"
     >
       <Text style={styles.title}></Text>
       <View style={styles.buttonContainer}>
         <TouchableOpacity
           style={styles.button}
-          onPress={() => navigation.navigate('GeradorRodizio')}
+          onPress={() => navigation.navigate("GeradorRodizio")}
         >
           <View style={styles.buttonContent}>
             <Icon name="clipboard" size={20} color="#fff" style={styles.icon} />
             <Text style={styles.buttonText}>Rodizio Organistas</Text>
           </View>
         </TouchableOpacity>
-        
         <TouchableOpacity
           style={styles.button}
-          onPress={() => navigation.navigate('GeradorPorteiros')}
+          onPress={() => navigation.navigate("CultoJovens")}
+        >
+          <View style={styles.buttonContent}>
+            <Icon name="clipboard" size={20} color="#fff" style={styles.icon} />
+            <Text style={styles.buttonText}>Rodizio Culto de jovens</Text>
+          </View>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => navigation.navigate("GeradorPorteiros")}
         >
           <View style={styles.buttonContent}>
             <Icon name="clipboard" size={20} color="#fff" style={styles.icon} />
             <Text style={styles.buttonText}>Rodizio Porteiros</Text>
           </View>
         </TouchableOpacity>
-
         <TouchableOpacity
           style={styles.button}
-          onPress={() => navigation.navigate('GeradorSanitarios')}
+          onPress={() => navigation.navigate("GeradorSanitarios")}
         >
           <View style={styles.buttonContent}>
             <Icon name="clipboard" size={20} color="#fff" style={styles.icon} />
@@ -48,44 +60,45 @@ const HomeScreen = ({ navigation }) => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1, // A imagem vai cobrir toda a tela
-    justifyContent: 'space-between', // Espaço entre título e botões
-    alignItems: 'center', // Centraliza o conteúdo horizontalmente
-    padding: 20, // Espaçamento
+    flex: 1,
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: 20,
   },
   title: {
     fontSize: 22,
-    marginTop: 50, // Espaço no topo para o título
-    color: 'white', // Torna o texto visível sobre a imagem
-    textShadowColor: 'rgba(0, 0, 0, 0.5)', // Sombra no texto para melhor visibilidade
+    marginTop: 50,
+    color: "white",
+    textShadowColor: "rgba(0, 0, 0, 0.5)",
     textShadowOffset: { width: 1, height: 1 },
     textShadowRadius: 5,
-    textAlign: 'center', // Centraliza o texto
+    textAlign: "center",
   },
   buttonContainer: {
-    width: '100%', // Botões ocupam toda a largura disponível
-    paddingHorizontal: 20, // Espaçamento interno lateral
-    marginBottom: 90, // Move os botões mais para baixo
+    width: "100%",
+    paddingHorizontal: 20,
+    marginBottom: 90,
   },
   button: {
-    backgroundColor: 'rgb(203, 68, 31)', // Cor de fundo dos botões
-    paddingVertical: 15, // Altura dos botões
-    borderRadius: 8, // Borda arredondada
-    marginBottom: 15, // Espaçamento entre os botões
-    paddingHorizontal: 20, // Espaçamento interno lateral
+    backgroundColor: "rgb(203, 68, 31)",
+    paddingVertical: 15,
+    borderRadius: 8,
+    marginBottom: 15,
+    paddingHorizontal: 20,
   },
   buttonContent: {
-    flexDirection: 'row', // Ícone e texto lado a lado
-    alignItems: 'center', // Centraliza verticalmente
-    justifyContent: 'center', // Centraliza horizontalmente
+    flexDirection: "row",
+    alignItems: "center", // Alinhamento vertical
   },
   icon: {
-    marginRight: 20, // Espaço entre o ícone e o texto
+    marginRight: 35, // Espaço fixo entre o ícone e o texto
   },
   buttonText: {
-    color: 'white', // Cor do texto do botão
-    fontSize: 19, // Tamanho do texto do botão
-    fontWeight: 'bold', // Deixa o texto em negrito
+    color: "white",
+    fontSize: 19,
+    fontWeight: "bold",
+    textAlign: "left", // O texto começa exatamente após o ícone
+    flex: 1, // Garante que o texto ocupe o espaço necessário
   },
 });
 

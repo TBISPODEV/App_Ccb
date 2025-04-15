@@ -19,7 +19,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const GeradorRodizioScreen = () => {
   // Estados para armazenar os dados
-  const rodizioId = "rodizio";
+  const rodizioId = "rodizio4";
   const [organistas, setOrganistas] = useState([]);
   const [nome, setNome] = useState("");
   const [telefone, setTelefone] = useState("");
@@ -45,51 +45,50 @@ const GeradorRodizioScreen = () => {
 
     carregarDados();
   }, [rodizioId]);
-
-  const [escalaEditavel, setEscalaEditavel] = useState(null);
-
-  useEffect(() => {
-    if (escala) {
-      setEscalaEditavel(JSON.parse(JSON.stringify(escala))); // Clonar o objeto para edição
+    const [escalaEditavel, setEscalaEditavel] = useState(null);
+  
+    useEffect(() => {
+      if (escala) {
+        setEscalaEditavel(JSON.parse(JSON.stringify(escala))); // Clonar o objeto para edição
+      }
+    }, [escala]);
+  
+    const editarNomeRodizio = (data, index, novoNome) => {
+      const novaEscalaEditavel = { ...escalaEditavel };
+      novaEscalaEditavel[data][index].nome = novoNome;
+      setEscalaEditavel(novaEscalaEditavel);
+      setEscala(novaEscalaEditavel);
+    };
+  
+    // Exibir rodízio editável
+    {
+      escalaEditavel && (
+        <ScrollView style={{ marginTop: 10 }}>
+          {Object.keys(escalaEditavel).map((data) => (
+            <View key={data}>
+              <Text style={styles.item}>Data: {data}</Text>
+              {escalaEditavel[data].map((organista, index) => (
+                <TextInput
+                  key={index}
+                  style={styles.input}
+                  value={organista.nome}
+                  onChangeText={(novoNome) =>
+                    editarNomeRodizio(data, index, novoNome)
+                  }
+                />
+              ))}
+            </View>
+          ))}
+        </ScrollView>
+      );
     }
-  }, [escala]);
-
-  const editarNomeRodizio = (data, index, novoNome) => {
-    const novaEscalaEditavel = { ...escalaEditavel };
-    novaEscalaEditavel[data][index].nome = novoNome;
-    setEscalaEditavel(novaEscalaEditavel);
-    setEscala(novaEscalaEditavel);
-  };
-
-  // Exibir rodízio editável
-  {
-    escalaEditavel && (
-      <ScrollView style={{ marginTop: 10 }}>
-        {Object.keys(escalaEditavel).map((data) => (
-          <View key={data}>
-            <Text style={styles.item}>Data: {data}</Text>
-            {escalaEditavel[data].map((organista, index) => (
-              <TextInput
-                key={index}
-                style={styles.input}
-                value={organista.nome}
-                onChangeText={(novoNome) =>
-                  editarNomeRodizio(data, index, novoNome)
-                }
-              />
-            ))}
-          </View>
-        ))}
-      </ScrollView>
-    );
-  }
-  const prepararEdicao = () => {
-    if (escala) {
-      setEscalaEditavel(JSON.parse(JSON.stringify(escala))); // Clona os dados para edição
-    } else {
-      Alert.alert("Erro", "Nenhuma escala disponível para edição.");
-    }
-  };
+    const prepararEdicao = () => {
+      if (escala) {
+        setEscalaEditavel(JSON.parse(JSON.stringify(escala))); // Clona os dados para edição
+      } else {
+        Alert.alert("Erro", "Nenhuma escala disponível para edição.");
+      }
+    };
 
   // <== Função para salvar os dados
   const salvarDados = async (dados) => {
@@ -100,7 +99,6 @@ const GeradorRodizioScreen = () => {
     }
   };
 
-  // <== função para excluir organistas
   const excluirOrganista = (index) => {
     const novosOrganistas = [...organistas];
     novosOrganistas.splice(index, 1);
@@ -141,8 +139,7 @@ const GeradorRodizioScreen = () => {
     salvarDados(novosOrganistas);
     setNome("");
     setTelefone("");
-    setDisponibilidade("");
-    setTipoEscala("ambos"); // Resetar a seleção
+    setDisponibilidade("");  
   };
 
   // Função para calcular todos os dias selecionados de um mês
@@ -194,24 +191,12 @@ const GeradorRodizioScreen = () => {
 
       const escolhidos = [];
 
-      // Filtrando organistas para garantir que não repitam o mesmo tipo do dia anterior
-      const organistasFiltrados = organistasDisponiveis.filter(
-        (organista) =>
-          !ultimoDiaEscalados.includes(organista.nome) ||
-          ultimoDiaEscalados.some(
-            (o) => o.nome === organista.nome && o.tipo !== organista.tipoEscala
-          )
-      );
-
-      while (escolhidos.length < 2 && organistasDisponiveis.length > 0) {
-        const escolhido = organistasFiltrados.splice(
+      // Garantir que apenas uma pessoa faz "Meia Hora" e outra "Culto"
+      if( organistasDisponiveis.length > 0) {
+        const escolhido = organistasDisponiveis.splice(
           Math.floor(Math.random() * organistasDisponiveis.length),
           1
         )[0];
-        if (!escolhido) {
-          console.warn("Nenhum organista disponível para escolher!");
-          break; // Sai do loop se `escolhido` for undefined
-        }
 
         if (
           escolhido.tipoEscala === "principal" &&
@@ -228,35 +213,11 @@ const GeradorRodizioScreen = () => {
             escolhidos.push({ ...escolhido, tipo: "Principal" });
           } else if (!escolhidos.some((o) => o.tipo === "Lateral")) {
             escolhidos.push({ ...escolhido, tipo: "Lateral" });
-          } else {
-            // Se a pessoa tocou no dia anterior, alternamos o tipo
-            const tipoAnterior = ultimoDiaEscalados.find(
-              (o) => o.nome === escolhido.nome
-            )?.tipo;
-            const novoTipo =
-              tipoAnterior === "Principal" ? "Lateral" : "Principal";
-            escolhidos.push({ ...escolhido, tipo: novoTipo });
           }
         }
       }
-      // Se por algum motivo ainda faltar um organista, selecionamos outro
-      if (escolhidos.length < 2 && organistasFiltrados.length > 0) {
-        const escolhidoExtra = organistasFiltrados.splice(
-          Math.floor(Math.random() * organistasFiltrados.length),
-          1
-        )[0];
 
-        // Garante que o segundo organista tenha um tipo válido
-        const tipoExtra = escolhidos.some((o) => o.tipo === "Principal")
-          ? "Lateral"
-          : "Principal";
-        escolhidos.push({ ...escolhidoExtra, tipo: tipoExtra });
-      }
-
-      ultimoDiaEscalados = escolhidos.map((o) => ({
-        nome: o.nome,
-        tipo: o.tipo,
-      }));
+      ultimoDiaEscalados = escolhidos.map((o) => o.nome);
 
       novaEscala[data.toLocaleDateString("pt-BR")] = escolhidos.map(
         (organista) => ({
@@ -289,7 +250,7 @@ const GeradorRodizioScreen = () => {
             }
             h1 {
               text-align: center; /* Centraliza o título */
-              font-size: 24px;
+              font-size: 30px;
               color: #333; /* Cor escura para contraste */
             }
             table {
@@ -314,14 +275,14 @@ const GeradorRodizioScreen = () => {
               background-color: #f9f9f9; /* Cor alternada para linhas pares */
             }
             @page {
-              margin: 20mm; 
-              border: 5px solid black;/* Margem ao redor da página */
+              margin: 20mm;
+              border:5px solid black;  /* Margem ao redor da página */
             }
           </style>
         </head>
         <body>
-          <h1>Escala de Rodízio Porteiros</h1> <!-- Título do PDF -->
-            <h3>Dia de Ensaio: ${diaEnsaio}</h3>
+          <h1> Rodízio de Organistas Culto de jovens </h1> <!-- Título do PDF -->
+          <h3>Dia de Ensaio: ${diaEnsaio}</h3>
       `;
 
       // Itera sobre as datas da escala para criar uma tabela para cada dia
@@ -333,7 +294,6 @@ const GeradorRodizioScreen = () => {
               <tr>
                 <th>Nome</th> <!-- Cabeçalho da coluna Nome -->
                 <th>Telefone</th> <!-- Cabeçalho da coluna Telefone -->
-                <th>Portas</th> <!-- Cabeçalho da coluna Tipo -->
               </tr>
             </thead>
             <tbody>
@@ -347,8 +307,6 @@ const GeradorRodizioScreen = () => {
               <td>${formatarTelefone(
                 organista.telefone || "Não informado"
               )}</td>
-              <td>${organista.tipo}</td> <!-- Tipo de escala -->
-            </tr>
           `;
         });
 
@@ -386,10 +344,10 @@ const GeradorRodizioScreen = () => {
       style={styles.scrollContainer}
     >
       <View style={styles.container}>
-        <Text style={styles.title}>Rodizio dos porteiros</Text>
+        <Text style={styles.title}>Rodizio Culto de jovens </Text>
         <TextInput
           style={styles.input}
-          placeholder="Nome do porteiro e  porteira"
+          placeholder="Nome da organista"
           value={nome}
           onChangeText={setNome}
         />
@@ -400,35 +358,21 @@ const GeradorRodizioScreen = () => {
           keyboardType="phone-pad"
           onChangeText={setTelefone}
         />
+
         <TextInput
           style={styles.input}
           placeholder="Dias disponível para atender (ex: terça, quinta)"
           value={disponibilidade}
           onChangeText={setDisponibilidade}
         />
-        {/* Campo de seleção para tipo de escala (Meia Hora, Culto ou Ambos) */}
-        <View style={{ marginBottom: 10 }}>
-          <Text style={{ marginBottom: 5 }}>Porta:</Text>
-          <View
-            style={{ borderWidth: 1, borderColor: "#ccc", borderRadius: 10 }}
-          >
-            <Picker
-              selectedValue={tipoEscala}
-              onValueChange={(itemValue) => setTipoEscala(itemValue)}
-              style={{ height: 50 }}
-            >
-              <Picker.Item label="Ambos" value="ambos" />
-              <Picker.Item label="Atrio Principal" value="principal" />
-              <Picker.Item label="Atrio Lateral" value="lateral" />
-            </Picker>
-          </View>
-        </View>
+
         <TouchableOpacity style={styles.button} onPress={adicionarOrganista}>
           <View style={styles.buttonContent}>
             <Icon name="plus" size={20} color="#fff" style={styles.icon} />
-            <Text style={styles.buttonText}>Adicionar Porteiros</Text>
+            <Text style={styles.buttonText}>Adicionar organista</Text>
           </View>
         </TouchableOpacity>
+
         <TextInput
           style={styles.input}
           placeholder="Mês (1 a 12)"
@@ -445,11 +389,11 @@ const GeradorRodizioScreen = () => {
         />
         <TextInput
           style={styles.input}
-          placeholder="Dias de culto (ex: terça, quinta)"
+          placeholder="Dia de culto de jovens (ex: Domingo)"
           value={diasSelecionados}
           onChangeText={setDiasSelecionados}
         />
-          <TextInput
+         <TextInput
                   style={styles.input}
                   placeholder="Dia de Ensaio"
                   value={diaEnsaio}
@@ -462,31 +406,32 @@ const GeradorRodizioScreen = () => {
             <Text style={styles.buttonText}>Gerar Rodízio</Text>
           </View>
         </TouchableOpacity>
-        {/*Botão para ativar edição:*/}
-        <TouchableOpacity style={styles.button} onPress={prepararEdicao}>
-          <Text style={styles.buttonText}>Editar Rodízio</Text>
-        </TouchableOpacity>
-        // Exibição dos nomes editáveis:
-        {escalaEditavel && (
-          <ScrollView style={{ marginTop: 10 }}>
-            {Object.keys(escalaEditavel).map((data) => (
-              <View key={data}>
-                <Text style={styles.item}>Data: {data}</Text>
-                {escalaEditavel[data].map((organista, index) => (
-                  <TextInput
-                    key={index}
-                    style={styles.input}
-                    value={organista.nome}
-                    onChangeText={(novoNome) =>
-                      editarNomeRodizio(data, index, novoNome)
-                    }
-                  />
-                ))}
-              </View>
-            ))}
-          </ScrollView>
-        )}
-        <Text style={styles.subtitle}>Porteiros</Text>
+         {/*Botão para ativar edição:*/}
+                <TouchableOpacity style={styles.button} onPress={prepararEdicao}>
+                  <Text style={styles.buttonText}>Editar Rodízio</Text>
+                </TouchableOpacity>
+                // Exibição dos nomes editáveis:
+                {escalaEditavel && (
+                  <ScrollView style={{ marginTop: 10 }}>
+                    {Object.keys(escalaEditavel).map((data) => (
+                      <View key={data}>
+                        <Text style={styles.item}>Data: {data}</Text>
+                        {escalaEditavel[data].map((organista, index) => (
+                          <TextInput
+                            key={index}
+                            style={styles.input}
+                            value={organista.nome}
+                            onChangeText={(novoNome) =>
+                              editarNomeRodizio(data, index, novoNome)
+                            }
+                          />
+                        ))}
+                      </View>
+                    ))}
+                  </ScrollView>
+                )}
+
+        <Text style={styles.subtitle}>Organistas:</Text>
         <FlatList
           data={organistas}
           keyExtractor={(item, index) => index.toString()}
@@ -502,6 +447,7 @@ const GeradorRodizioScreen = () => {
             </View>
           )}
         />
+
         {/* Botão Gerar PDF */}
         <TouchableOpacity style={styles.button} onPress={gerarPDF}>
           <View style={styles.buttonContent}>
@@ -509,6 +455,7 @@ const GeradorRodizioScreen = () => {
             <Text style={styles.buttonText}>Gerar PDF</Text>
           </View>
         </TouchableOpacity>
+
         {escala && (
           <View style={[styles.scrollContainer, { flex: 1 }]}>
             {Object.keys(escala).map((data) => (

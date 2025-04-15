@@ -6,6 +6,7 @@ import GeradorRodizio from './src/GeradorRodizio';  // Importação corrigida
 import GeradorOrganistas from './src/GeradorOrganistas';  // Importação corrigida
 import GeradorPorteiros from './src/GeradorPorteiros';  // Importação corrigida
 import GeradorSanitarios from './src/GeradorSanitarios'; 
+import CultoJovens from './src/CultoJovens';
 
 const Stack = createStackNavigator();
 
@@ -17,7 +18,8 @@ export default function App() {
         <Stack.Screen name="GeradorRodizio" component={GeradorRodizio} />
         <Stack.Screen name="GeradorPorteiros" component={GeradorPorteiros} />
         <Stack.Screen name="GeradorSanitarios" component={GeradorSanitarios} />
-
+        <Stack.Screen name="CultoJovens" component={CultoJovens} />
+       
       </Stack.Navigator>
     </NavigationContainer>
   );

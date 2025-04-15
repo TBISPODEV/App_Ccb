@@ -45,6 +45,64 @@ const GeradorRodizioScreen = () => {
 
     carregarDados();
   }, [rodizioId]);
+  const [escalaEditavel, setEscalaEditavel] = useState(null);
+    useEffect(() => {
+      if (escala) {
+        setEscalaEditavel(JSON.parse(JSON.stringify(escala))); // Clonar o objeto para edição
+      }
+    }, [escala]);
+
+   const editarNomeRodizio = (data, index, novoNome) => {
+      const novaEscalaEditavel = { ...escalaEditavel };
+      novaEscalaEditavel[data][index].nome = novoNome;
+      setEscalaEditavel(novaEscalaEditavel);
+      setEscala(novaEscalaEditavel);
+    };
+  
+    // Exibir rodízio editável
+    {
+      escalaEditavel && (
+        <ScrollView style={{ marginTop: 10 }}>
+          {Object.keys(escalaEditavel).map((data) => (
+            <View key={data}>
+              <Text style={styles.item}>Data: {data}</Text>
+              {escalaEditavel[data].map((organista, index) => (
+                <View key={index}>
+                  <TextInput
+                    key={index}
+                    style={styles.input}
+                    value={`${organista.nome} - ${organista.tipo}`} // Exibe nome e tipo juntos
+                    onChangeText={(novoTexto) => {
+                      const partes = novoTexto.split(" - "); // Separando nome e tipo pelo traço "-"
+                      const novoNome = partes[0]; // Pegamos apenas o nome
+                      const novoTipo = partes[1] ? partes[1] : organista.tipo; // Pegamos o tipo ou mantemos o existente
+      
+                      // Atualiza os dados no estado
+                      const novaEscalaEditavel = { ...escalaEditavel };
+                      novaEscalaEditavel[data][index] = {
+                        ...novaEscalaEditavel[data][index],
+                        nome: novoNome,
+                        tipo: novoTipo,
+                      };
+      
+                      setEscalaEditavel(novaEscalaEditavel);
+                    }}
+                  />
+                </View>
+              ))}
+            </View>
+          ))}
+        </ScrollView>
+      );
+    }
+    const prepararEdicao = () => {
+      if (escala) {
+        setEscalaEditavel(JSON.parse(JSON.stringify(escala))); // Clona os dados para edição
+      } else {
+        Alert.alert("Erro", "Nenhuma escala disponível para edição.");
+      }
+    };
+  
 
   // <== Função para salvar os dados
   const salvarDados = async (dados) => {
@@ -203,6 +261,16 @@ const GeradorRodizioScreen = () => {
               padding: 20px;
               background-color: #f4f4f4; /* Fundo leve */
             }
+               .moldura {
+        border: 10px solid #000; /* Moldura preta */
+        padding: 20px;
+        margin: 0 auto;
+        width: 90%;
+        background-color: #fff;
+        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); /* Efeito de profundidade */
+      }
+              
+              }
             h1 {
               text-align: center; /* Centraliza o título */
               font-size: 24px;
@@ -230,7 +298,8 @@ const GeradorRodizioScreen = () => {
               background-color: #f9f9f9; /* Cor alternada para linhas pares */
             }
             @page {
-              margin: 20px; /* Margem ao redor da página */
+              margin: 20mm; 
+              border: 5px solid black;/* Margem ao redor da página */
             }
           </style>
         </head>
@@ -315,126 +384,165 @@ const GeradorRodizioScreen = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Rodizio dos sanitários</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Nome dos irmãos"
-        value={nome}
-        onChangeText={setNome}
-      />
+    <ScrollView
+      contentContainerStyle={{ flexGrow: 1 }}
+      style={styles.scrollContainer}
+    >
+      <View style={styles.container}>
+        <Text style={styles.title}>Rodizio dos sanitários</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Nome dos irmãos"
+          value={nome}
+          onChangeText={setNome}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Telefone (ex: (11) 91234-5678)"
+          value={telefone}
+          keyboardType="phone-pad"
+          onChangeText={setTelefone}
+        />
 
-      <TextInput
-        style={styles.input}
-        placeholder="Dias disponível para atender (ex: terça, quinta)"
-        value={disponibilidade}
-        onChangeText={setDisponibilidade}
-      />
+        <TextInput
+          style={styles.input}
+          placeholder="Dias disponível para atender (ex: terça, quinta)"
+          value={disponibilidade}
+          onChangeText={setDisponibilidade}
+        />
 
-      {/* Campo de seleção para tipo de escala (Meia Hora, Culto ou Ambos) */}
-      <View style={{ marginBottom: 10 }}>
-        <Text style={{ marginBottom: 5 }}>Atendimento:</Text>
-        <View style={{ borderWidth: 1, borderColor: "#ccc", borderRadius: 10 }}>
-          <Picker
-            selectedValue={tipoEscala}
-            onValueChange={(itemValue) => setTipoEscala(itemValue)}
-            style={{ height: 50 }}
+        {/* Campo de seleção para tipo de escala (Meia Hora, Culto ou Ambos) */}
+        <View style={{ marginBottom: 10 }}>
+          <Text style={{ marginBottom: 5 }}>Atendimento:</Text>
+          <View
+            style={{ borderWidth: 1, borderColor: "#ccc", borderRadius: 10 }}
           >
-            <Picker.Item label="Estacionamento" value="estacionamento" />
-            <Picker.Item
-              label="Sanitário Masculino"
-              value="Sanitário masculino"
-            />
-            <Picker.Item
-              label="Sanitário Feminino"
-              value="Sanitário feminino"
-            />
-          </Picker>
+            <Picker
+              selectedValue={tipoEscala}
+              onValueChange={(itemValue) => setTipoEscala(itemValue)}
+              style={{ height: 50 }}
+            >
+              <Picker.Item label="Estacionamento" value="estacionamento" />
+              <Picker.Item
+                label="Sanitário Masculino"
+                value="Sanitário masculino"
+              />
+              <Picker.Item
+                label="Sanitário Feminino"
+                value="Sanitário feminino"
+              />
+            </Picker>
+          </View>
         </View>
-      </View>
 
-      <TouchableOpacity style={styles.button} onPress={adicionarOrganista}>
-        <View style={styles.buttonContent}>
-          <Icon name="plus" size={20} color="#fff" style={styles.icon} />
-          <Text style={styles.buttonText}>Adicionar Porteiros</Text>
-        </View>
-      </TouchableOpacity>
+        <TouchableOpacity style={styles.button} onPress={adicionarOrganista}>
+          <View style={styles.buttonContent}>
+            <Icon name="plus" size={20} color="#fff" style={styles.icon} />
+            <Text style={styles.buttonText}>Adicionar Porteiros</Text>
+          </View>
+        </TouchableOpacity>
 
-      <TextInput
-        style={styles.input}
-        placeholder="Mês (1 a 12)"
-        value={mes}
-        keyboardType="numeric"
-        onChangeText={setMes}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Ano (ex: 2025)"
-        value={ano}
-        keyboardType="numeric"
-        onChangeText={setAno}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Dias de culto (ex: terça, quinta)"
-        value={diasSelecionados}
-        onChangeText={setDiasSelecionados}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Dia de Ensaio"
-        value={diaEnsaio}
-        onChangeText={setDiaEnsaio}
-      />
+        <TextInput
+          style={styles.input}
+          placeholder="Mês (1 a 12)"
+          value={mes}
+          keyboardType="numeric"
+          onChangeText={setMes}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Ano (ex: 2025)"
+          value={ano}
+          keyboardType="numeric"
+          onChangeText={setAno}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Dias de culto (ex: terça, quinta)"
+          value={diasSelecionados}
+          onChangeText={setDiasSelecionados}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Dia de Ensaio"
+          value={diaEnsaio}
+          onChangeText={setDiaEnsaio}
+        />
 
-      {/* Botão Gerar Rodízio */}
-      <TouchableOpacity style={styles.button} onPress={gerarEscala}>
-        <View style={styles.buttonContent}>
-          <Icon name="clipboard" size={20} color="#fff" style={styles.icon} />
-          <Text style={styles.buttonText}>Gerar Rodízio</Text>
-        </View>
-      </TouchableOpacity>
+        {/* Botão Gerar Rodízio */}
+        <TouchableOpacity style={styles.button} onPress={gerarEscala}>
+          <View style={styles.buttonContent}>
+            <Icon name="clipboard" size={20} color="#fff" style={styles.icon} />
+            <Text style={styles.buttonText}>Gerar Rodízio</Text>
+          </View>
+        </TouchableOpacity>
 
-      <Text style={styles.subtitle}>Irmãos do atendimento:</Text>
-      <FlatList
-        data={organistas}
-        keyExtractor={(item, index) => index.toString()}
-        renderItem={({ item, index }) => (
-          <View style={styles.itemContainer}>
-            <Text style={styles.item}>
-              {item.nome} - {item.disponibilidade.join(", ")} - Tipo:{" "}
-              {item.tipoEscala}
-            </Text>
-            <TouchableOpacity onPress={() => excluirOrganista(index)}>
-              <Icon name="trash" size={20} color="#ff0000" />
-            </TouchableOpacity>
+         {/*Botão para ativar edição:*/}
+                <TouchableOpacity style={styles.button} onPress={prepararEdicao}>
+                  <Text style={styles.buttonText}>Editar Rodízio</Text>
+                </TouchableOpacity>
+                // Exibição dos nomes editáveis:
+                {escalaEditavel && (
+                  <ScrollView style={{ marginTop: 10 }}>
+                    {Object.keys(escalaEditavel).map((data) => (
+                      <View key={data}>
+                        <Text style={styles.item}>Data: {data}</Text>
+                        {escalaEditavel[data].map((organista, index) => (
+                          <TextInput
+                            key={index}
+                            style={styles.input}
+                            value={organista.nome}
+                            onChangeText={(novoNome) =>
+                              editarNomeRodizio(data, index, novoNome)
+                            }
+                          />
+                        ))}
+                      </View>
+                    ))}
+                  </ScrollView>
+                )}
+
+        <Text style={styles.subtitle}>Irmãos do atendimento:</Text>
+        <FlatList
+          data={organistas}
+          keyExtractor={(item, index) => index.toString()}
+          renderItem={({ item, index }) => (
+            <View style={styles.item}>
+              <Text style={styles.item}>
+                {item.nome} - {item.disponibilidade.join(", ")} - Tipo:{" "}
+                {item.tipoEscala}
+              </Text>
+              <TouchableOpacity onPress={() => excluirOrganista(index)}>
+                <Icon name="trash" size={20} color="#ff0000" />
+              </TouchableOpacity>
+            </View>
+          )}
+        />
+
+        {/* Botão Gerar PDF */}
+        <TouchableOpacity style={styles.button} onPress={gerarPDF}>
+          <View style={styles.buttonContent}>
+            <Icon name="file" size={20} color="#fff" style={styles.icon} />
+            <Text style={styles.buttonText}>Gerar PDF</Text>
+          </View>
+        </TouchableOpacity>
+
+        {escala && (
+          <View style={[styles.scrollContainer, { flex: 1 }]}>
+            {Object.keys(escala).map((data) => (
+              <View key={data}>
+                <Text style={styles.item}>Data: {data}</Text>
+                {escala[data].map((f, index) => (
+                  <Text key={index} style={styles.item}>
+                    - {f.nome} ({f.tipo})
+                  </Text>
+                ))}
+              </View>
+            ))}
           </View>
         )}
-      />
-
-      {/* Botão Gerar PDF */}
-      <TouchableOpacity style={styles.button} onPress={gerarPDF}>
-        <View style={styles.buttonContent}>
-          <Icon name="file" size={20} color="#fff" style={styles.icon} />
-          <Text style={styles.buttonText}>Gerar PDF</Text>
-        </View>
-      </TouchableOpacity>
-
-      {escala && (
-        <ScrollView style={[styles.scrollContainer, { flex: 1 }]}>
-          {Object.keys(escala).map((data) => (
-            <View key={data}>
-              <Text style={styles.item}>Data: {data}</Text>
-              {escala[data].map((f, index) => (
-                <Text key={index} style={styles.item}>
-                  - {f.nome} ({f.tipo})
-                </Text>
-              ))}
-            </View>
-          ))}
-        </ScrollView>
-      )}
-    </View>
+      </View>
+    </ScrollView>
   );
 };
 
