@@ -27,6 +27,7 @@ const GeradorRodizioScreen = () => {
   const [ano, setAno] = useState("");
   const [diasSelecionados, setDiasSelecionados] = useState("");
   const [diaEnsaio, setDiaEnsaio] = useState("");
+  const [comun, setComun] = useState("");
 
   useEffect(() => {
     const carregarDados = async () => {
@@ -87,7 +88,8 @@ const GeradorRodizioScreen = () => {
     }
   };
 
-  // <== função para salvar os dados
+  // função para salvar os dados
+
   const salvarDados = async (dados) => {
     try {
       await AsyncStorage.setItem(rodizioId, JSON.stringify(dados));
@@ -97,6 +99,7 @@ const GeradorRodizioScreen = () => {
   };
 
   // <== função para excluir organistas
+
   const excluirOrganista = (index) => {
     const novosOrganistas = [...organistas];
     novosOrganistas.splice(index, 1);
@@ -205,8 +208,9 @@ const GeradorRodizioScreen = () => {
         f.disponibilidade.includes(diaDaSemana)
       );
 
+       // Se todos os organistas já foram sorteados, reseta a lista
+
       if (organistasDisponiveis.length === 0) {
-        // Se todos os organistas já foram sorteados, reseta a lista
         organistasDisponiveis = organistasDisponiveisOriginais.filter((f) =>
           f.disponibilidade.includes(diaDaSemana)
         );
@@ -230,9 +234,9 @@ const GeradorRodizioScreen = () => {
               : pessoaSorteada.tipoEscala,
         },
       ];
+       // Alterna entre as pessoas do tipo "meiaHora"
 
       if (pessoaSorteada.tipoEscala === "meiaHora") {
-        // Alterna entre as pessoas do tipo "meiaHora"
         let parceiro = organistasAmbos[indexMeiaHora % organistasAmbos.length];
         indexMeiaHora++;
         novaEscala[dataFormatada].push({
@@ -266,7 +270,8 @@ const GeradorRodizioScreen = () => {
         box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); /* Efeito de profundidade */
       }
             h1 { text-align: center; font-size: 24px; color: #333; }
-            h3 { text-align: center; color: #345; }
+            h2 { text-align: left; font-size:18px; color: #333;}
+            h3 { text-align: left; color: #345; }
             table { width: 100%; border-collapse: collapse; margin-bottom: 20px; background-color: #fff; border-radius: 5px; }
             th, td { border: 1px solid #ccc; padding: 8px; text-align: left; font-size: 14px; }
             th { background-color: #f8f8f8; font-weight: bold; }
@@ -282,6 +287,7 @@ const GeradorRodizioScreen = () => {
       
 
           <h1>Escala de Rodízio</h1>
+          <h2>Comun: ${comun}</h2>
           <h3>Dia de Ensaio: ${diaEnsaio}</h3>
       `;
 
@@ -385,6 +391,14 @@ const GeradorRodizioScreen = () => {
             <Text style={styles.buttonText}>Adicionar Organista</Text>
           </View>
         </TouchableOpacity>
+        <TextInput
+        style={styles.input}
+        placeholder="Comun congregação"
+        value={comun}
+        onChangeText={setComun}
+        
+        />
+
         <TextInput
           style={styles.input}
           placeholder="Mês (1 a 12)"

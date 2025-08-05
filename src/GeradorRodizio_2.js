@@ -406,7 +406,6 @@ const GeradorRodizioScreen = () => {
           value={disponibilidade}
           onChangeText={setDisponibilidade}
         />
-        {/* Campo de seleção para tipo de escala (Meia Hora, Culto ou Ambos) */}
         <View style={{ marginBottom: 10 }}>
           <Text style={{ marginBottom: 5 }}>Porta:</Text>
           <View
@@ -455,14 +454,16 @@ const GeradorRodizioScreen = () => {
                   value={diaEnsaio}
                   onChangeText={setDiaEnsaio}
                 />
-        {/* Botão Gerar Rodízio */}
+
         <TouchableOpacity style={styles.button} onPress={gerarEscala}>
           <View style={styles.buttonContent}>
             <Icon name="clipboard" size={20} color="#fff" style={styles.icon} />
             <Text style={styles.buttonText}>Gerar Rodízio</Text>
           </View>
         </TouchableOpacity>
+
         {/*Botão para ativar edição:*/}
+        
         <TouchableOpacity style={styles.button} onPress={prepararEdicao}>
           <Text style={styles.buttonText}>Editar Rodízio</Text>
         </TouchableOpacity>

@@ -143,6 +143,7 @@ const GeradorRodizioScreen = () => {
   };
 
   // Função para calcular todos os dias selecionados de um mês
+
   const calcularDiasDoMes = (mes, ano, diasSelecionados) => {
     const diasDaSemana = [
       "domingo",
@@ -169,6 +170,7 @@ const GeradorRodizioScreen = () => {
   };
 
   // Função para gerar a escala
+
   const gerarEscala = () => {
     if (!mes || !ano || !diasSelecionados) {
       Alert.alert("Erro", "Por favor, informe o mês, ano e os dias da semana.");
@@ -236,8 +238,9 @@ const GeradorRodizioScreen = () => {
       Alert.alert("Erro", "Nenhuma escala gerada.");
       return;
     }
+     // Início do HTML com o estilo para o documento
+
     try {
-      // Início do HTML com o estilo para o documento
       let htmlContent = `
       <html>
         <head>
@@ -300,6 +303,7 @@ const GeradorRodizioScreen = () => {
         `;
 
         // Itera sobre os organistas escalados para essa data
+
         escala[data].forEach((organista) => {
           htmlContent += `
             <tr>
@@ -311,6 +315,7 @@ const GeradorRodizioScreen = () => {
         });
 
         // Fecha a tabela
+
         htmlContent += `
             </tbody>
           </table>
@@ -318,12 +323,15 @@ const GeradorRodizioScreen = () => {
       });
 
       // Fecha o HTML do corpo do documento
+
       htmlContent += `</body></html>`;
 
       // Gera o PDF a partir do HTML
+
       const { uri } = await printToFileAsync({ html: htmlContent });
 
       // Verifica se o compartilhamento está disponível no dispositivo e compartilha o PDF
+      
       if (Sharing.isAvailableAsync()) {
         await Sharing.shareAsync(uri);
       } else {
